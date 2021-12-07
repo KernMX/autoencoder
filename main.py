@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics import classification_report, confusion_matrix
 
 from autoencoder import Autoencoder, LSTMAutoencoder, get_threshold, confidence
 from preprocessing import load_emnist, load_pump, load_bearing, from_timeseries

@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 import tensorflow as tf
 from tensorflow.keras.layers import Dense, BatchNormalization, Flatten, Reshape
 from tensorflow.keras.layers import LSTM, RepeatVector, TimeDistributed
-from tensorflow.keras.layers import Conv2D, Conv2DTranspose, MaxPooling2D
 from tensorflow.keras.regularizers import L2
 import statsmodels.api as sm
 import numpy as np

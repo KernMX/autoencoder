@@ -68,7 +68,7 @@ if __name__ == "__main__":
         trn_x, tst_x, trn_y, tst_y = load_emnist()
         trn_x = trn_x.reshape(-1, trn_x.shape[1]*trn_x.shape[2])
         tst_x = tst_x.reshape(-1, tst_x.shape[1]*tst_x.shape[2])
-        model = Autoencoder(input_dim=trn_x.shape[1], num_layers=3, output_activation='sigmoid', activation='relu')
+        model = Autoencoder(input_dim=trn_x.shape[1], num_layers=3, lr=1e-1, output_activation='sigmoid', activation='relu')
     elif args.pump:
         trn_x, tst_x, trn_y, tst_y = load_pump()
         print(trn_x.shape)

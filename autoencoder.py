@@ -54,30 +54,6 @@ class Autoencoder(AutoencoderBase):
             else:
                 self.decoder.add(Dense(input_dim//(2**i), activation=output_activation, kernel_regularizer=L2(lr)))
 
-class ConvolutionalAutoencoder(AutoencoderBase):
-    def __init__(self, input_shape, output_activation='sigmoid', activation='relu'):
-        super(ConvolutionalAutoencoder, self).__init__()
-        self.build_architecture(input_shape, output_activation, activation)
-
-    def build_architecture(self, input_shape, output_activation, activation):
-        # Encoder
-        self.encoder.add(Conv2D(32, 3, activation=activation, padding='same', input_shape=input_shape))
-        self.encoder.add(MaxPooling2D(2))
-        self.encoder.add(Conv2D(64, 3, activation=activation, padding='same'))
-        self.encoder.add(MaxPooling2D(2))
-        self.encoder.add(Conv2D(64, 3, activation=activation, padding='same'))
-        self.encoder.add(Flatten())
-        self.encoder.add(Dense(49, activation=activation))
-        self.encoder.add(Reshape((7,7,1)))
-        # Decoder
-        self.decoder.add(Conv2DTranspose(64, 3, activation=activation, padding='same', strides=2, input_shape=(7,7,1)))
-        self.decoder.add(BatchNormalization())
-        self.decoder.add(Conv2DTranspose(64, 3, activation=activation, padding='same', strides=2))
-        self.decoder.add(BatchNormalization())
-        self.decoder.add(Conv2DTranspose(32, 3, activation=activation, padding='same', strides=1))
-        self.decoder.add(BatchNormalization())
-        self.decoder.add(Conv2D(1, 3, activation=output_activation, padding='same', strides=1))
-
 class LSTMAutoencoder(AutoencoderBase):
     def __init__(self, input_shape, max_units, num_layers, lr, activation='relu'):
         super(LSTMAutoencoder, self).__init__()

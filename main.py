@@ -34,7 +34,7 @@ def plot_threshold(errors, threshold):
     plt.legend(loc='best')
     plt.show()
 
-def plot_threshold(errors, threshold, true_y):
+def plot_outliers(errors, threshold, true_y):
     anomalies = true_y[true_y == 2]
     plt.figure(figsize=(16,9), dpi=80)
     plt.title('Loss Distribution', fontsize=16)

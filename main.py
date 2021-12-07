@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from autoencoder import ConvolutionalAutoencoder, Autoencoder, LSTMAutoencoder, get_threshold, confidence
+from autoencoder import Autoencoder, LSTMAutoencoder, get_threshold, confidence
 from preprocessing import load_emnist, load_pump, load_bearing, from_timeseries
 
 def plot_loss(history):
@@ -66,9 +66,9 @@ if __name__ == "__main__":
     # Load appropriate data and initialize autoencoder architecture
     if args.emnist:
         trn_x, tst_x, trn_y, tst_y = load_emnist()
-        trn_x = trn_x[:,:,:,np.newaxis]
-        tst_x = tst_x[:,:,:,np.newaxis]
-        model = ConvolutionalAutoencoder(input_shape=trn_x.shape[1:],output_activation='sigmoid', activation='relu')
+        trn_x = trn_x.reshape(-1, trn_x.shape[1]*trn_x.shape[2])
+        tst_x = tst_x.reshape(-1, tst_x.shape[1]*tst_x.shape[2])
+        model = Autoencoder(input_dim=trn_x.shape[1], num_layers=3, output_activation='sigmoid', activation='relu')
     elif args.pump:
         trn_x, tst_x, trn_y, tst_y = load_pump()
         print(trn_x.shape)

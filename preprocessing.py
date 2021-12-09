@@ -8,11 +8,9 @@ from emnist import extract_training_samples, extract_test_samples
 
 def load_emnist():
     trn_x, trn_y = extract_training_samples('digits')
-    # _, trn_x, _, trn_y = train_test_split(trn_x, trn_y, test_size=0.33)
     trn_y = np.ones_like(trn_y)
     trn_x = trn_x[:,:,:,np.newaxis] / 255
     normal_x, normal_y = extract_test_samples('digits')
-    # _, normal_x, _, normal_y = train_test_split(normal_x, normal_y, test_size=0.33)
     normal_y = np.ones_like(normal_y)
     anomaly_x, anomaly_y = extract_test_samples('letters')
     anomaly_y = np.zeros_like(anomaly_y)
@@ -34,6 +32,7 @@ def load_pump():
     df = df.set_index('date')
 
     # Split data into train and test sets
+    #df = df[df['machine_status'] != 'RECOVERING']
     trn_x = df[df['machine_status'] == 'NORMAL']
     trn_y = trn_x['machine_status']
     del trn_x['machine_status']
@@ -58,7 +57,7 @@ def load_pump():
     trn_x = scaler.transform(trn_x)
 
     # Dimensionality Reduction
-    pca = PCA(3)
+    pca = PCA(0.95)
     tst_x = pca.fit_transform(tst_x)
     trn_x = pca.transform(trn_x)
 

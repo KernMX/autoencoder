@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, ConfusionMatrixDisplay
 
 from autoencoder import Autoencoder, LSTMAutoencoder, get_threshold, confidence
 from preprocessing import load_emnist, load_pump, load_bearing, from_timeseries
@@ -36,13 +36,13 @@ def plot_threshold(errors, threshold):
     plt.show()
 
 def plot_outliers(errors, threshold, true_y):
-    anomalies = true_y[true_y == 2]
+    x = np.linspace(0, errors.shape[0], num=errors.shape[0], endpoint=False)
     plt.figure(figsize=(16,9), dpi=80)
     plt.title('Loss Distribution', fontsize=16)
     plt.plot(errors, 'b', label='Reconstruction Loss', linewidth=2)
     plt.axhline(y=threshold, color='red', label='Threshold')
     plt.yscale('log')
-    plt.plot(anomalies, 'rx', linestyle='none', markersize=12)
+    plt.plot(x[true_y == 0], errors[true_y == 0], 'rx', linestyle='none', markersize=12)
     plt.legend(loc='best')
     plt.show()
 
@@ -72,8 +72,6 @@ if __name__ == "__main__":
         model = Autoencoder(input_dim=trn_x.shape[1], num_layers=3, lr=1e-1, output_activation='sigmoid', activation='relu')
     elif args.pump:
         trn_x, tst_x, trn_y, tst_y = load_pump()
-        print(trn_x.shape)
-        print(tst_x.shape)
         model = LSTMAutoencoder(input_shape=trn_x.shape, max_units=128, num_layers=3, lr=1e-1)
     elif args.bearing:
         trn_x, tst_x, trn_y, tst_y = load_bearing()
@@ -102,9 +100,15 @@ if __name__ == "__main__":
         trn_reconstructions = from_timeseries(trn_reconstructions)
         trn_x = from_timeseries(trn_x)
     errors = np.mean(np.abs(trn_reconstructions - trn_x), axis=1)
-    threshold = get_threshold(errors, alpha=0.01)
-    print(f"Threshold: {threshold}")
+    threshold = get_threshold(errors, alpha=0.005)
+    plt.figure(figsize=(16,9), dpi=80)
+    plt.title('Reconstruction Loss Distribution', fontsize=16)
+    sns.distplot(errors, bins=20, kde=True, color='blue', label='Reconstruction Loss');
+    plt.legend(loc='upper right')
+    plt.show()
+    threshold = 0.25
     plot_decision(errors, threshold)
+    print(f"Threshold: {threshold}")
 
     # Perform Anomaly Detection
     reconstructions = model.predict(tst_x)
@@ -125,9 +129,8 @@ if __name__ == "__main__":
 
     # Calculate the actual accuracy. precision, and recall
     if not args.bearing:
-        plot_outliers(errors, threshold, tst_y)
-        pred_y = [int(x) for x in msk]
+        plot_outliers(errors, threshold, tst_y.flatten())
+        pred_y = [0 if x else 1 for x in msk]
         print(classification_report(tst_y, pred_y))
-        matrix = confusion_matrix(tst_y, pred_y)
-        plt.matshow(matrix)
+        ConfusionMatrixDisplay.from_predictions(tst_y, pred_y)
         plt.show()
